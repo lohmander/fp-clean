@@ -1,4 +1,4 @@
-import { describe, expect, test } from "bun:test";
+import { describe, expect, mock, test } from "bun:test";
 
 import * as Operation from "~/Operation";
 import * as Result from "~/Result";
@@ -119,5 +119,19 @@ describe("stream", () => {
     }
 
     expect(sum).toBe((1 + 2 + 3 + 5 + 8) * -1);
+  });
+
+  test("stops yielding values when the consuming loop exits", async () => {
+    const tap = mock();
+    const op = pipe(
+      Operation.fromIterable([1, 2, 3, 4, 5]),
+      Operation.tap(tap),
+    );
+
+    for await (const res of stream(op, Context.empty())) {
+      if (res.ok && res.value === 3) break; // Cancel after the third value
+    }
+
+    expect(tap).toHaveBeenCalledTimes(3);
   });
 });
