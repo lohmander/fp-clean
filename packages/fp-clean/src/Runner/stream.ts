@@ -3,7 +3,7 @@ import { flatMap, fromStreamResult, type Operation } from "../Operation";
 import { type OperationRuntime } from "../Operation/runtime";
 import { pipe } from "../pipe";
 import * as Result from "../Result";
-import { resolve } from "./resolveEnvironment";
+import { resolve } from "./resolve";
 
 export async function* stream<A, E, R_Op, R_Ctx, S_Ctx extends R_Op, CE>(
   op: Operation<A, E, R_Op>,
