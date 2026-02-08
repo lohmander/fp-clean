@@ -1,0 +1,24 @@
+{
+  "name": "fp-clean-recipes",
+  "exports": {
+    ".": {
+      "import": "./dist/index.js",
+      "types": "./dist/index.d.ts"
+    }
+  },
+  "version": "1.0.0-alpha.1",
+  "type": "module",
+  "dependencies": {
+    "fp-clean": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/bun": "latest"
+  },
+  "peerDependencies": {
+    "typescript": "^5"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json --outDir dist",
+    "test": "bun test"
+  }
+}
