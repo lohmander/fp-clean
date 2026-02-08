@@ -1,0 +1,20 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["../fp-clean/src/index.ts"],
+  "out": "docs/api",
+  "plugin": ["typedoc-plugin-markdown"],
+  "theme": "markdown",
+  "readme": "none",
+  "name": "fp-clean API",
+  "includeVersion": true,
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Operation",
+    "Result",
+    "StreamResult",
+    "Context",
+    "Runner",
+    "Other"
+  ]
+}
