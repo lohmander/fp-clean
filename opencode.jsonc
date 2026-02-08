@@ -1,0 +1,61 @@
+{
+  "$schema": "https://opencode.ai/config.json",
+
+  // Default agent for this project
+  "default_agent": "fp-clean",
+
+  "agent": {
+    // fp-clean specialized agent (defined in .opencode/agents/fp-clean.md)
+    "fp-clean": {
+      "mode": "primary",
+      "model": "deepseek/deepseek-reasoner",
+      "temperature": 0.1,
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "read": true,
+        "glob": true,
+        "grep": true,
+        "task": true,
+        "webfetch": true,
+        "context7_resolve-library-id": true,
+        "context7_query-docs": true,
+      },
+    },
+
+    // Override built-in build agent for this project
+    "build": {
+      "mode": "primary",
+      "model": "deepseek/deepseek-reasoner",
+      "temperature": 0.1,
+      "tools": {
+        "write": true,
+        "edit": true,
+        "bash": true,
+        "read": true,
+        "glob": true,
+        "grep": true,
+      },
+    },
+
+    // Read-only plan agent for exploration
+    "plan": {
+      "mode": "primary",
+      "model": "deepseek/deepseek-reasoner",
+      "temperature": 0.1,
+      "tools": {
+        "write": false,
+        "edit": false,
+        "bash": false,
+        "read": true,
+        "glob": true,
+        "grep": true,
+        "task": true,
+        "webfetch": true,
+        "context7_resolve-library-id": true,
+        "context7_query-docs": true,
+      },
+    },
+  },
+}
