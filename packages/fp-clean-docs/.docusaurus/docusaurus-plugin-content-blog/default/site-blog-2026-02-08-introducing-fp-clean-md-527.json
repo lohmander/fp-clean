@@ -1,0 +1,50 @@
+{
+  "permalink": "/blog/introducing-fp-clean",
+  "editUrl": "https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/blog/2026-02-08-introducing-fp-clean.md",
+  "source": "@site/blog/2026-02-08-introducing-fp-clean.md",
+  "title": "Introducing fp-clean",
+  "description": "fp-clean is a TypeScript library designed with one goal in mind: making the safe way the easy way.",
+  "date": "2026-02-08T00:00:00.000Z",
+  "tags": [
+    {
+      "inline": true,
+      "label": "fp-clean",
+      "permalink": "/blog/tags/fp-clean"
+    },
+    {
+      "inline": true,
+      "label": "typescript",
+      "permalink": "/blog/tags/typescript"
+    },
+    {
+      "inline": true,
+      "label": "functional-programming",
+      "permalink": "/blog/tags/functional-programming"
+    }
+  ],
+  "readingTime": 0.74,
+  "hasTruncateMarker": true,
+  "authors": [
+    {
+      "name": "Hannes",
+      "title": "Maintainer of fp-clean",
+      "url": "https://github.com/hannes",
+      "imageURL": "https://github.com/hannes.png",
+      "key": "hannes",
+      "page": null
+    }
+  ],
+  "frontMatter": {
+    "slug": "introducing-fp-clean",
+    "title": "Introducing fp-clean",
+    "authors": [
+      "hannes"
+    ],
+    "tags": [
+      "fp-clean",
+      "typescript",
+      "functional-programming"
+    ]
+  },
+  "unlisted": false
+}
