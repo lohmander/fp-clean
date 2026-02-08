@@ -13,7 +13,7 @@
     "write-translations": "docusaurus write-translations",
     "write-heading-ids": "docusaurus write-heading-ids",
     "typecheck": "tsc",
-    "generate-api": "typedoc --plugin typedoc-plugin-markdown --out docs/api ../fp-clean/src/index.ts"
+    "generate-api": "typedoc --out docs/api ../fp-clean/src/index.ts"
   },
   "dependencies": {
     "@docusaurus/core": "3.7.0",
@@ -29,7 +29,6 @@
     "@docusaurus/tsconfig": "3.7.0",
     "@docusaurus/types": "3.7.0",
     "typedoc": "^0.27.0",
-    "typedoc-plugin-markdown": "^4.4.0",
     "typescript": "~5.6.2"
   },
   "browserslist": {
