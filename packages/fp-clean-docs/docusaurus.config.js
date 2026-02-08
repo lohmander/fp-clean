@@ -9,7 +9,7 @@ const darkCodeTheme = themes.dracula;
 const config = {
   title: "fp-clean",
   tagline: "Safe, composable, explicit, clean up, observable",
-  favicon: "img/favicon.ico",
+  favicon: "img/favicon.svg",
 
   // Set the production url of your site here
   url: "https://your-docusaurus-test-site.com",
@@ -62,8 +62,6 @@ const config = {
   themeConfig:
     /** @type {import('@docusaurus/preset-classic').ThemeConfig} */
     ({
-      // Replace with your project's social card
-      image: "img/docusaurus-social-card.jpg",
       navbar: {
         title: "fp-clean",
         logo: {

@@ -9,6 +9,8 @@ tags: [fp-clean, typescript, functional-programming]
 
 fp-clean is a TypeScript library designed with one goal in mind: **making the safe way the easy way**.
 
+<!-- truncate -->
+
 ## Why fp-clean?
 
 After working with various functional programming libraries, we noticed that while they provide powerful abstractions, they often come with steep learning curves and complex APIs. fp-clean aims to bridge this gap by providing:
