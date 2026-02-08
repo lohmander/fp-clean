@@ -1,0 +1,19 @@
+{
+  "$schema": "https://typedoc.org/schema.json",
+  "entryPoints": ["../fp-clean/src/index.ts"],
+  "out": "docs/api",
+  "tsconfig": "../fp-clean/tsconfig.json",
+  "readme": "none",
+  "name": "fp-clean API",
+  "includeVersion": true,
+  "sort": ["source-order"],
+  "categorizeByGroup": true,
+  "categoryOrder": [
+    "Operation",
+    "Result",
+    "StreamResult",
+    "Context",
+    "Runner",
+    "Other"
+  ]
+}
