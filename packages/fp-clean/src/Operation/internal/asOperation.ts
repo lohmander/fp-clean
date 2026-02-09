@@ -1,5 +1,6 @@
 import type { ReaderStreamResult } from "../../ReaderStreamResult";
 import type { Operation, YieldWrap } from "../types";
+import { OperationBrand } from "../types";
 
 export const asOperation = <A, E, R>(
   rsr: ReaderStreamResult<A, E, R>,
@@ -10,6 +11,8 @@ export const asOperation = <A, E, R>(
     const y: YieldWrap<A, E, R> = { operation: fa } as YieldWrap<A, E, R>;
     return (yield y) as A;
   };
+
+  (fa as any)[OperationBrand] = true;
 
   return fa;
 };

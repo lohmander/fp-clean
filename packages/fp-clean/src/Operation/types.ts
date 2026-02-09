@@ -4,6 +4,8 @@ import type { OperationRuntime, OperationRuntimeSymbol } from "./runtime";
 export declare const OperationTypeId: unique symbol;
 export declare const YieldWrapId: unique symbol;
 
+export const OperationBrand = Symbol.for("fp-clean/Operation");
+
 export type YieldWrap<A, E, R> = {
   readonly operation: Operation<A, E, R>;
   readonly [YieldWrapId]?: { R: R; A: A; E: E }; // phantom only, no runtime cost
@@ -18,6 +20,7 @@ export type OperationEnv = {
 export interface Operation<A, E = never, R = {}> {
   (r: R): StreamResult<A, E>;
   readonly [OperationTypeId]?: { R: R; A: A; E: E };
+  readonly [OperationBrand]?: true;
 
   [Symbol.iterator](): Generator<YieldWrap<A, E, R>, A, any>;
 }
