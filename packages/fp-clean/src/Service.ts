@@ -1,97 +1,119 @@
-import type { Operation } from "./Operation";
 import type {
   TagConstructor,
-  ValueOf,
   AnyTagShape,
+  ValueOf,
   Requires,
 } from "./Context/Tag";
+import type { Operation } from "./Operation";
+import { OperationBrand } from "./Operation";
 import { askFor } from "./Operation/constructors";
 import { gen } from "./Operation/gen";
+import { ok } from "./Operation/constructors";
 
 /**
- * Extracts the return type of a function, or the type itself if not a function.
+ * Checks if a type consists solely of methods (functions).
  */
-type UnwrapOperation<T> = T extends (...args: any[]) => infer R ? R : T;
+type AllMethods<T> = {
+  [K in keyof T]: T[K] extends (...args: any[]) => any ? true : false;
+}[keyof T] extends true
+  ? true
+  : false;
 
 /**
- * Checks if a value is an Operation by checking if it has a [Symbol.iterator] method.
- * All fp-clean Operations have this method (set by asOperation).
+ * Transforms a service interface type into a proxy interface where each method
+ * returns an Operation with the appropriate requirements.
+ *
+ * @template T - The tag shape type (validated to have only methods)
  */
-function isOperation(value: any): value is Operation<any, any, any> {
-  return (
-    typeof value === "function" && typeof value[Symbol.iterator] === "function"
-  );
-}
+type ProxyFor<T extends AnyTagShape> = {
+  [K in keyof ValueOf<T>]: ValueOf<T>[K] extends (
+    ...args: infer Args
+  ) => infer Ret
+    ? Ret extends Operation<infer A, infer E, infer R>
+      ? (...args: Args) => Operation<A, E, Requires<T> & R>
+      : (...args: Args) => Operation<Ret, never, Requires<T>>
+    : never;
+};
+
+/**
+ * Runtime check to determine if a value is an Operation.
+ * Checks for the OperationBrand symbol added by asOperation().
+ * All Operations are created through asOperation() which adds the brand.
+ */
+const isOperation = (value: unknown): value is Operation<unknown> => {
+  if (typeof value !== "function") {
+    return false;
+  }
+  return (value as any)[OperationBrand] === true;
+};
 
 /**
  * Creates a service proxy for a given tag.
  *
- * This proxy allows you to access service methods/properties as if they were direct,
- * while internally using askFor and gen to resolve the service and access them.
+ * This proxy allows you to call service methods as if they were direct,
+ * while internally using askFor and gen to resolve the service and invoke the method.
  *
- * Supports both:
- * - Direct Operation properties: { now: Operation<Date> } → service.now()
- * - Methods returning Operations: { findUserById: (id) => Operation<User, Error> } → service.findUserById(467)
+ * The service interface must consist solely of methods (functions). Each method
+ * should return an Operation (though non‑Operation return values are wrapped in ok).
+ * If the service interface contains non-function properties, the return type will be `never`,
+ * causing compile-time errors when trying to use the proxy.
  *
  * @template T - The tag shape type (e.g., ClockTag)
  * @param tag - The tag constructor for the service
- * @returns A proxy object with methods/properties corresponding to the service interface
+ * @returns A proxy object with methods corresponding to the service interface,
+ *          or `never` if the service interface is invalid
  *
  * @example
  * interface Clock {
- *   now: Operation<Date>;
- *   timezone: Operation<string>;
+ *   now: () => Operation<Date>;
+ *   sleep: (ms: number) => Operation<void>;
  * }
  *
  * const ClockTag = Tag("clock")<Clock>();
- * const clockService = Service.proxy(ClockTag);
- * const nowOp = clockService.now(); // Note: parentheses needed
+ * const ClockService = Service.proxy(ClockTag);
  *
- * interface UserService {
- *   findById: (id: string) => Operation<User, NotFoundError>;
- * }
+ * // Equivalent to:
+ * // flatMap(clock => clock.sleep(1000))(askFor(ClockTag))
+ * const sleepOp = ClockService.sleep(1000);
  *
- * const UserServiceTag = Tag("userService")<UserService>();
- * const userService = Service.proxy(UserServiceTag);
- * const userOp = userService.findById("123"); // Method call with arguments
+ * // Using with gen syntax:
+ * const program = Operation.gen(function* () {
+ *   const now = yield* ClockService.now();
+ *   yield* ClockService.sleep(1000);
+ *   return now;
+ * });
  */
 export function proxy<T extends AnyTagShape>(
   tag: TagConstructor<T>,
-): {
-  [K in keyof ValueOf<T>]: ValueOf<T>[K] extends (
-    ...args: infer Args
-  ) => infer Ret
-    ? (
-        ...args: Args
-      ) => UnwrapOperation<Ret> extends Operation<infer A, infer E, any>
-        ? Operation<A, E, Requires<T>>
-        : never
-    : UnwrapOperation<ValueOf<T>[K]> extends Operation<infer A, infer E, any>
-      ? () => Operation<A, E, Requires<T>>
-      : never;
-} {
+): AllMethods<ValueOf<T>> extends true ? ProxyFor<T> : never {
   return new Proxy({} as any, {
     get(_, methodKey: string) {
-      return function (...args: any[]): Operation<any, any, Requires<T>> {
+      return function (...args: any[]): Operation<any, any, any> {
         return gen(function* () {
           const service = yield* askFor(tag);
-          const property = service[methodKey];
+          const method = (service as Record<string, unknown>)[methodKey];
 
-          // Check if the property is an Operation
-          if (isOperation(property)) {
-            // It's an Operation property, yield* it directly
-            // Note: args are ignored for direct Operation properties
-            return yield* property;
-          } else if (typeof property === "function") {
-            // It's a method that returns an Operation, call it with args
-            const operation = property(...args);
-            return yield* operation;
-          } else {
-            // It's not a function, yield* it directly
-            return yield* property;
+          if (typeof method !== "function") {
+            throw new Error(
+              `Service property '${String(methodKey)}' is not a function. ` +
+                `Service proxies only support methods (functions).`,
+            );
           }
-        }) as Operation<any, any, Requires<T>>;
+
+          const result = method.apply(service, args);
+
+          // If the result is an Operation, yield* it to execute and get the value.
+          // Otherwise, wrap the plain value in ok.
+          if (isOperation(result)) {
+            return yield* result;
+          }
+
+          return yield* ok(result);
+        });
       };
     },
-  });
+  }) as AllMethods<ValueOf<T>> extends true ? ProxyFor<T> : never;
 }
+
+// Optionally export a namespace for convenience
+export const Service = { proxy };
