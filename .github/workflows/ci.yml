@@ -43,3 +43,7 @@ jobs:
 
       - name: Run tests
         run: cd packages/fp-clean && bun test
+
+      - name: Run benchmarks (fast mode)
+        run: cd packages/fp-clean && bun run benchmark:fast
+        continue-on-error: true
