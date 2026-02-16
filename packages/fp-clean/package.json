@@ -17,6 +17,7 @@
   },
   "scripts": {
     "build": "tsc -p tsconfig.build.json --outDir dist",
+    "typecheck": "tsc --noEmit -p tsconfig.json",
     "test": "bun test",
     "benchmark": "bun benchmarks/index.ts",
     "benchmark:fast": "bun benchmarks/index.ts --fast"
