@@ -36,7 +36,7 @@ jobs:
         run: bunx tsc --noEmit -p tsconfig.json
 
       - name: Type check packages
-        run: bun run -F '*' tsc --noEmit -p tsconfig.json
+        run: bun run -F '*' typecheck
 
       - name: Build packages
         run: bun run -F '*' build
