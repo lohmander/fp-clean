@@ -1,51 +1,5 @@
-type Ok<A> = { ok: true; value: A };
-type Err<E> = { ok: false; error: E };
-
-/**
- * Result type representing either a success (Ok) or a failure (Err).
- *
- * @typeParam T - type of the Success-value
- * @typeParam E - type of the Failure-value
- */
-export type Result<A, E> = Ok<A> | Err<E>;
-
-/**
- * @typeParam T - type of the Success-value
- * @param value - Sucess value
- * @returns Ok Result
- */
-export const ok = <A>(value: A): Ok<A> => ({
-  ok: true,
-  value,
-});
-
-export const err = <E>(error: E): Err<E> => ({
-  ok: false,
-  error,
-});
-
-export const isOk = <A, E>(result: Result<A, E>): result is Ok<A> => result.ok;
-
-export const isErr = <A, E>(result: Result<A, E>): result is Err<E> =>
-  !result.ok;
-
-/**
- * Unwraps the Result, returning the success value or throwing an error
- * created from the failure value.
- *
- * @template E type of the Failure-value
- * @param toError function mapping the Failure-value to an error
- * @returns The unwrapped success value
- */
-export const unwrapOrThrow =
-  <E>(toError: (e: E) => unknown) =>
-  <A>(result: Result<A, E>): A => {
-    if (result.ok) {
-      return result.value;
-    } else {
-      throw toError(result.error);
-    }
-  };
+import { err, ok } from "./constructors";
+import type { Result } from "./types";
 
 /**
  * Maps the success value of a Result using the provided function.

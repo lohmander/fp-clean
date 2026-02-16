@@ -1,8 +1,8 @@
-import { asOperation } from "../Operation/internal/asOperation";
-import { CircularDependencyError, type Env } from "../Env";
-import * as Operation from "../Operation";
-import { OperationRuntimeSymbol } from "../Operation/runtime";
-import * as Result from "../Result";
+import { asOperation } from "../internal/asOperation";
+import { CircularDependencyError, type Env } from "../../Env";
+import * as Operation from "..";
+import { OperationRuntimeSymbol } from "../runtime";
+import * as Result from "../../Result";
 import { DependencyResolutionError } from "./error";
 
 export function resolve<R, S, E>(

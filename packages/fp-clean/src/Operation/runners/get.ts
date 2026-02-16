@@ -1,6 +1,6 @@
-import type { Env } from "../Env";
-import type { Operation } from "../Operation";
-import * as Result from "../Result";
+import type { Env } from "../../Env";
+import type { Operation } from "../../Operation";
+import * as Result from "../../Result";
 import { stream } from "./stream";
 
 export async function get<A, E, R_Op, R_Ctx, S_Ctx extends R_Op, CE>(

@@ -1,9 +1,9 @@
-import { asOperation } from "../Operation/internal/asOperation";
-import { CircularDependencyError, type Env } from "../Env";
-import { flatMap, type Operation } from "../Operation";
-import { createRuntime } from "../Operation/runtime";
-import { pipe } from "../pipe";
-import * as Result from "../Result";
+import { asOperation } from "../internal/asOperation";
+import { CircularDependencyError, type Env } from "../../Env";
+import { flatMap, type Operation } from "../";
+import { createRuntime } from "../runtime";
+import { pipe } from "../../pipe";
+import * as Result from "../../Result";
 import { resolve } from "./resolve";
 
 export async function* stream<Ok, Err, R_Op, R_Ctx, S_Ctx extends R_Op, CE>(
