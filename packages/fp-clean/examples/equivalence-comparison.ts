@@ -9,7 +9,7 @@
  *   flatMap(service => service.method(args))(askFor(Tag))
  */
 
-import * as Context from "../src/Context";
+import * as Env from "../src/Env";
 import * as F from "../src/Operation";
 import * as Runner from "../src/Runner";
 import { Service } from "../src/Service";
@@ -25,7 +25,7 @@ interface Calculator {
   multiply: (a: number, b: number) => F.Operation<number>;
 }
 
-const CalculatorTag = Context.Tag("calculator")<Calculator>();
+const CalculatorTag = Env.Tag("calculator")<Calculator>();
 
 // Create proxy
 const CalculatorService = Service.proxy(CalculatorTag);
@@ -37,8 +37,8 @@ const mockCalculator: Calculator = {
 };
 
 const context = pipe(
-  Context.empty(),
-  Context.provide(CalculatorTag, F.ok(mockCalculator)),
+  Env.empty(),
+  Env.provide(CalculatorTag, F.ok(mockCalculator)),
 );
 
 // ============================================================================

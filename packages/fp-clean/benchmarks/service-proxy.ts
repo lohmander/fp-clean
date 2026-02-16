@@ -1,6 +1,6 @@
 import { Bench } from "tinybench";
 import * as F from "../src/Operation";
-import * as Context from "../src/Context";
+import * as Env from "../src/Env";
 import * as Service from "../src/Service";
 import { get } from "../src/Runner";
 
@@ -10,7 +10,7 @@ interface MathService {
   multiply: (a: number, b: number) => F.Operation<number>;
 }
 
-class MathTag extends Context.Tag("math")<MathService>() {}
+class MathTag extends Env.Tag("math")<MathService>() {}
 
 // Create a mock service implementation
 const mockMathService: MathService = {
@@ -19,10 +19,7 @@ const mockMathService: MathService = {
 };
 
 // Create context with the service
-const mathContext = Context.provide(
-  MathTag,
-  F.ok(mockMathService),
-)(Context.empty());
+const mathContext = Env.provide(MathTag, F.ok(mockMathService))(Env.empty());
 
 async function benchmarkServiceProxy() {
   const bench = new Bench({ time: 200 });
@@ -91,7 +88,8 @@ async function benchmarkServiceProxy() {
   const results = new Map();
   for (const task of tasks) {
     if (task.result) {
-      results.set(task.name, task.result.mean); // mean in nanoseconds
+      const result = task.result as unknown as { mean: number };
+      results.set(task.name, result.mean); // mean in nanoseconds
     }
   }
 

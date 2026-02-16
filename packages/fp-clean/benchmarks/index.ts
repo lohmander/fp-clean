@@ -1,6 +1,6 @@
-import { benchmarkServiceProxy } from "./service-proxy.ts";
-import { benchmarkFrameworkOverhead } from "./framework-overhead.ts";
-import { benchmarkMicroOperations } from "./micro-operations.ts";
+import { benchmarkServiceProxy } from "./service-proxy";
+import { benchmarkFrameworkOverhead } from "./framework-overhead";
+import { benchmarkMicroOperations } from "./micro-operations";
 
 async function main() {
   console.log("🚀 Running fp-clean Performance Benchmarks\n");

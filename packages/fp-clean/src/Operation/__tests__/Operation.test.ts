@@ -1,7 +1,6 @@
 import { describe, expect, mock, test } from "bun:test";
 import * as F from "~/Operation";
 import * as Result from "~/Result";
-import * as StreamResult from "~/StreamResult";
 import * as Env from "~/Env";
 import { createRuntime } from "../runtime";
 

@@ -8,7 +8,7 @@
  */
 
 import * as F from "~/Operation";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
 import * as Service from "~/Service";
 import { get } from "~/Runner";
 import {
@@ -24,7 +24,7 @@ interface MathService {
 }
 
 // Create the tag and proxy
-class MathTag extends Context.Tag("math")<MathService>() {}
+class MathTag extends Env.Tag("math")<MathService>() {}
 const mathService = Service.proxy(MathTag);
 
 // Create test context
@@ -32,10 +32,7 @@ const mockMathService: MathService = {
   add: (a, b) => F.ok(a + b),
 };
 
-const testContext = Context.provide(
-  MathTag,
-  F.ok(mockMathService),
-)(Context.empty());
+const testContext = Env.provide(MathTag, F.ok(mockMathService))(Env.empty());
 
 // Vanilla JS baseline
 function vanillaAdd(a: number, b: number): number {

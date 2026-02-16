@@ -4,8 +4,6 @@ import type {
   TagConstructor,
   ValueOf,
 } from "../Env/Tag";
-import * as RSR from "../ReaderStreamResult";
-import type { StreamResult } from "../StreamResult";
 import { asOperation } from "./internal/asOperation";
 import { getRuntimeFromEnv, InvalidRuntime } from "./runtime";
 import type { Operation, OperationEnv } from "./types";
@@ -27,7 +25,11 @@ export function err<Err>(error: Err): Operation<never, Err> {
   return asOperation(() => asyncGen([Result.err(error)]));
 }
 
-export function ask<Needs>(): Operation<Needs, never, Needs> {
+export function ask<Requirements>(): Operation<
+  Requirements,
+  never,
+  Requirements
+> {
   return asOperation((r) => ok(r)(r));
 }
 

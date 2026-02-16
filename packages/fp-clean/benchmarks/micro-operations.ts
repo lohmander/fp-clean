@@ -125,7 +125,9 @@ async function benchmarkMicroOperations() {
   const legacyTask = tasks.find((t) => t.name.includes("legacy with iterator"));
 
   if (currentTask?.result && legacyTask?.result) {
-    const speedup = legacyTask.result.mean / currentTask.result.mean;
+    const current = currentTask.result as unknown as { mean: number };
+    const legacy = legacyTask.result as unknown as { mean: number };
+    const speedup = legacy.mean / current.mean;
     console.log(
       `Current isOperation is ${speedup.toFixed(2)}x faster than legacy implementation`,
     );
@@ -140,7 +142,9 @@ async function benchmarkMicroOperations() {
   );
 
   if (brandTask?.result && iteratorTask?.result) {
-    const ratio = iteratorTask.result.mean / brandTask.result.mean;
+    const brand = brandTask.result as unknown as { mean: number };
+    const iterator = iteratorTask.result as unknown as { mean: number };
+    const ratio = iterator.mean / brand.mean;
     console.log(
       `Brand check is ${ratio.toFixed(2)}x faster than iterator existence check`,
     );
@@ -153,7 +157,9 @@ async function benchmarkMicroOperations() {
   );
 
   if (directTask?.result && proxyTask?.result) {
-    const overhead = proxyTask.result.mean / directTask.result.mean;
+    const direct = directTask.result as unknown as { mean: number };
+    const proxy = proxyTask.result as unknown as { mean: number };
+    const overhead = proxy.mean / direct.mean;
     console.log(
       `Proxy invocation is ${overhead.toFixed(2)}x slower than direct function call`,
     );
@@ -168,12 +174,10 @@ async function benchmarkMicroOperations() {
   );
 
   if (createTask?.result && executeTask?.result) {
-    console.log(
-      `Generator creation: ${(createTask.result.mean * 1000).toFixed(3)}ms`,
-    );
-    console.log(
-      `Generator next(): ${(executeTask.result.mean * 1000).toFixed(3)}ms`,
-    );
+    const create = createTask.result as unknown as { mean: number };
+    const execute = executeTask.result as unknown as { mean: number };
+    console.log(`Generator creation: ${(create.mean * 1000).toFixed(3)}ms`);
+    console.log(`Generator next(): ${(execute.mean * 1000).toFixed(3)}ms`);
   }
 
   // Summary of key overheads

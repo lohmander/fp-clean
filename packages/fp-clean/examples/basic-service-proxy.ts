@@ -10,7 +10,7 @@
  * 5. Provide implementations and run the program
  */
 
-import * as Context from "../src/Context";
+import * as Env from "../src/Env";
 import * as F from "../src/Operation";
 import * as Runner from "../src/Runner";
 import { Service } from "../src/Service";
@@ -35,8 +35,8 @@ interface Database {
 // 2. Create Tags
 // ============================================================================
 
-const LoggerTag = Context.Tag("logger")<Logger>();
-const DatabaseTag = Context.Tag("database")<Database>();
+const LoggerTag = Env.Tag("logger")<Logger>();
+const DatabaseTag = Env.Tag("database")<Database>();
 
 // ============================================================================
 // 3. Create Service Proxies
@@ -98,9 +98,9 @@ const mockDatabase: Database = {
 
 // Build context with implementations
 const context = pipe(
-  Context.empty(),
-  Context.provide(LoggerTag, F.ok(mockLogger)),
-  Context.provide(DatabaseTag, F.ok(mockDatabase)),
+  Env.empty(),
+  Env.provide(LoggerTag, F.ok(mockLogger)),
+  Env.provide(DatabaseTag, F.ok(mockDatabase)),
 );
 
 // ============================================================================

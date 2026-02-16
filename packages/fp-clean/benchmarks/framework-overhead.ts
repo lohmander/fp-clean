@@ -66,7 +66,7 @@ async function benchmarkFrameworkOverhead() {
 
   bench.add("11. Execute Operation via get", async () => {
     const op = F.ok(add(5, 3));
-    await get(op, {});
+    await get(op, { services: {} });
   });
 
   // 5. Environment (Reader) overhead
@@ -119,8 +119,9 @@ async function benchmarkFrameworkOverhead() {
     for (const taskName of taskNames) {
       const task = tasks.find((t) => t.name === taskName);
       if (task?.result) {
-        const opsPerSec = task.result.hz.toFixed(0);
-        const msPerOp = (task.result.mean * 1000).toFixed(3);
+        const result = task.result as unknown as { hz: number; mean: number };
+        const opsPerSec = result.hz.toFixed(0);
+        const msPerOp = (result.mean * 1000).toFixed(3);
         console.log(`  ${taskName}: ${opsPerSec} ops/sec (${msPerOp} ms/op)`);
       }
     }
@@ -129,11 +130,14 @@ async function benchmarkFrameworkOverhead() {
   // Calculate overhead ratios
   console.log("\n=== Overhead Ratios ===\n");
 
-  const plainJsValue = tasks.find((t) => t.name === "Plain JS - return value")
-    ?.result?.mean;
-  const fOkValue = tasks.find(
-    (t) => t.name === "F.ok - wrap value in Operation",
-  )?.result?.mean;
+  const plainJsValue = (
+    tasks.find((t) => t.name === "Plain JS - return value")
+      ?.result as unknown as { mean: number } | undefined
+  )?.mean;
+  const fOkValue = (
+    tasks.find((t) => t.name === "F.ok - wrap value in Operation")
+      ?.result as unknown as { mean: number } | undefined
+  )?.mean;
 
   if (plainJsValue && fOkValue) {
     const overhead = (fOkValue / plainJsValue - 1) * 100;
@@ -142,11 +146,14 @@ async function benchmarkFrameworkOverhead() {
     );
   }
 
-  const plainJsFunc = tasks.find(
-    (t) => t.name === "Plain JS - function application",
-  )?.result?.mean;
-  const fMapValue = tasks.find((t) => t.name === "F.map - map over Operation")
-    ?.result?.mean;
+  const plainJsFunc = (
+    tasks.find((t) => t.name === "Plain JS - function application")
+      ?.result as unknown as { mean: number } | undefined
+  )?.mean;
+  const fMapValue = (
+    tasks.find((t) => t.name === "F.map - map over Operation")
+      ?.result as unknown as { mean: number } | undefined
+  )?.mean;
 
   if (plainJsFunc && fMapValue) {
     const overhead = (fMapValue / plainJsFunc - 1) * 100;
@@ -155,10 +162,15 @@ async function benchmarkFrameworkOverhead() {
     );
   }
 
-  const plainJsExec = tasks.find((t) => t.name === "Execute plain JS")?.result
-    ?.mean;
-  const fGetValue = tasks.find((t) => t.name === "Execute Operation via get")
-    ?.result?.mean;
+  const plainJsExec = (
+    tasks.find((t) => t.name === "Execute plain JS")?.result as unknown as
+      | { mean: number }
+      | undefined
+  )?.mean;
+  const fGetValue = (
+    tasks.find((t) => t.name === "Execute Operation via get")
+      ?.result as unknown as { mean: number } | undefined
+  )?.mean;
 
   if (plainJsExec && fGetValue) {
     const overhead = fGetValue / plainJsExec;

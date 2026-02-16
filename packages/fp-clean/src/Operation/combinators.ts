@@ -3,12 +3,12 @@ import { err, ok } from "./constructors";
 import { asOperation } from "./internal/asOperation";
 import type { Operation } from "./types";
 
-export function flatMap<Ok, Ok2, Err2, Needs2>(
-  f: (a: Ok) => Operation<Ok2, Err2, Needs2>,
+export function flatMap<Ok, Ok2, Err2, Requirements2>(
+  f: (a: Ok) => Operation<Ok2, Err2, Requirements2>,
 ) {
-  return <Err, Needs>(
-    fa: Operation<Ok, Err, Needs>,
-  ): Operation<Ok2, Err | Err2, Needs & Needs2> =>
+  return <Err, Requirements>(
+    fa: Operation<Ok, Err, Requirements>,
+  ): Operation<Ok2, Err | Err2, Requirements & Requirements2> =>
     asOperation(
       (r) =>
         async function* () {

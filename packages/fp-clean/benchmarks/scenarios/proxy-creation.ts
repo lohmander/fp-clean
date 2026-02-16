@@ -5,7 +5,7 @@
  */
 
 import * as F from "~/Operation";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
 import * as Service from "~/Service";
 import { get } from "~/Runner";
 import {
@@ -19,7 +19,7 @@ interface MathService {
   add: (a: number, b: number) => F.Operation<number>;
 }
 
-class MathTag extends Context.Tag("math")<MathService>() {}
+class MathTag extends Env.Tag("math")<MathService>() {}
 
 // Pre-created proxy (reused)
 const cachedProxy = Service.proxy(MathTag);
@@ -29,10 +29,7 @@ const mockMathService: MathService = {
   add: (a, b) => F.ok(a + b),
 };
 
-const testContext = Context.provide(
-  MathTag,
-  F.ok(mockMathService),
-)(Context.empty());
+const testContext = Env.provide(MathTag, F.ok(mockMathService))(Env.empty());
 
 export async function runProxyCreationBenchmark(): Promise<BenchmarkResult[]> {
   console.log("\n🏃 Running Proxy Creation Overhead Benchmark...\n");
