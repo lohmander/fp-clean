@@ -35,15 +35,15 @@ jobs:
       - name: Type check root config
         run: bunx tsc --noEmit -p tsconfig.json
 
-      - name: Type check package
-        run: cd packages/fp-clean && bunx tsc --noEmit -p tsconfig.json
+      - name: Type check packages
+        run: bun run -F '*' tsc --noEmit -p tsconfig.json
 
-      - name: Build package
-        run: cd packages/fp-clean && bun run build
+      - name: Build packages
+        run: bun run -F '*' build
 
       - name: Run tests
-        run: cd packages/fp-clean && bun test
+        run: bun run -F '*' test
 
       - name: Run benchmarks (fast mode)
-        run: cd packages/fp-clean && bun run benchmark:fast
+        run: bun run -F '*' benchmark:fast
         continue-on-error: true
