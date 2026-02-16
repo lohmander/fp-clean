@@ -3,12 +3,12 @@ import { err, ok } from "./constructors";
 import { asOperation } from "./internal/asOperation";
 import type { Operation } from "./types";
 
-export function flatMap<Ok, Ok2, Err2, Requirements2>(
-  f: (a: Ok) => Operation<Ok2, Err2, Requirements2>,
+export function flatMap<Ok, Ok2, Err2, Req2>(
+  f: (a: Ok) => Operation<Ok2, Err2, Req2>,
 ) {
-  return <Err, Requirements>(
-    fa: Operation<Ok, Err, Requirements>,
-  ): Operation<Ok2, Err | Err2, Requirements & Requirements2> =>
+  return <Err, Req>(
+    fa: Operation<Ok, Err, Req>,
+  ): Operation<Ok2, Err | Err2, Req & Req2> =>
     asOperation(
       (r) =>
         async function* () {
@@ -24,14 +24,18 @@ export function flatMap<Ok, Ok2, Err2, Requirements2>(
     );
 }
 
-export function orElse<E, E2, A, R2>(f: (error: E) => Operation<A, E2, R2>) {
-  return <R>(fa: Operation<A, E, R>): Operation<A, E | E2, R & R2> =>
+export function orElse<Err, Err2, Ok, Req2>(
+  f: (error: Err) => Operation<Ok, Err2, Req2>,
+) {
+  return <Req>(
+    fa: Operation<Ok, Err, Req>,
+  ): Operation<Ok, Err | Err2, Req & Req2> =>
     asOperation(
       (r) =>
         async function* () {
           for await (const res of fa(r)()) {
             if (res.ok) {
-              yield res as Result<A, never>;
+              yield res as Result<Ok, never>;
               continue;
             }
 
@@ -41,28 +45,28 @@ export function orElse<E, E2, A, R2>(f: (error: E) => Operation<A, E2, R2>) {
     );
 }
 
-export function map<A, B>(f: (a: A) => B) {
-  return <E, R>(o: Operation<A, E, R>) =>
-    flatMap((a: A) => ok(f(a)) as Operation<B, E, R>)(o);
+export function map<Ok, Ok2>(f: (a: Ok) => Ok2) {
+  return <Err, Req>(fa: Operation<Ok, Err, Req>) =>
+    flatMap((a: Ok) => ok(f(a)) as Operation<Ok2, Err, Req>)(fa);
 }
 
-export function mapErr<E, E2>(f: (error: E) => E2) {
-  return <A, R>(o: Operation<A, E, R>) =>
-    orElse((error: E) => err(f(error)) as Operation<A, E2, R>)(o);
+export function mapErr<Err, Err2>(f: (error: Err) => Err2) {
+  return <Ok, Req>(o: Operation<Ok, Err, Req>) =>
+    orElse((error: Err) => err(f(error)) as Operation<Ok, Err2, Req>)(o);
 }
 
-export function tap<A>(f: (a: A) => void) {
-  return <E, R>(o: Operation<A, E, R>) =>
-    flatMap((a: A) => {
+export function tap<Ok>(f: (a: Ok) => void) {
+  return <Err, Req>(fa: Operation<Ok, Err, Req>) =>
+    flatMap((a: Ok) => {
       f(a);
-      return ok(a) as Operation<A, E, R>;
-    })(o);
+      return ok(a) as Operation<Ok, Err, Req>;
+    })(fa);
 }
 
-export function tapErr<E>(f: (error: E) => void) {
-  return <A, R>(o: Operation<A, E, R>) =>
-    orElse((error: E) => {
+export function tapErr<Err>(f: (error: Err) => void) {
+  return <Ok, Req>(fa: Operation<Ok, Err, Req>) =>
+    orElse((error: Err) => {
       f(error);
-      return err(error) as Operation<A, E, R>;
-    })(o);
+      return err(error) as Operation<Ok, Err, Req>;
+    })(fa);
 }
