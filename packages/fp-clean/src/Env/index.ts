@@ -1,3 +1,3 @@
 export { type Requires, Tag } from "./Tag";
-export { type Context, empty, provide } from "./Context";
+export { type Env, empty, provide } from "./Env";
 export { CircularDependencyError } from "./error";

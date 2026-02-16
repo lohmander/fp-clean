@@ -1,8 +1,8 @@
 import { describe, expect, mock, test } from "bun:test";
 import * as F from "~/Operation";
 import * as Result from "~/Result";
-import * as StreamResult from "~/StreamResult";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
+import { createRuntime } from "../runtime";
 
 describe("Operation", () => {
   test("ok and err", async () => {
@@ -22,21 +22,11 @@ describe("Operation", () => {
     expect(errValues).toEqual([Result.err("Error occurred")]);
   });
 
-  test("fromStreamResult", async () => {
-    const sr = StreamResult.ok(7);
-    const flow = F.fromStreamResult(sr);
-
-    const values = [];
-    for await (const value of flow({})()) {
-      values.push(value);
-    }
-    expect(values).toEqual([Result.ok(7)]);
-  });
-
   test("fromIterable", async () => {
     const iterableFlow = F.fromIterable([1, 2, 3]);
     const iterableValues = [];
-    for await (const value of iterableFlow({})()) {
+    const [_, runtime] = createRuntime();
+    for await (const value of iterableFlow(runtime)()) {
       iterableValues.push(value);
     }
     expect(iterableValues).toEqual([Result.ok(1), Result.ok(2), Result.ok(3)]);
@@ -49,7 +39,7 @@ describe("Operation", () => {
       })(),
     );
     const asyncIterableValues = [];
-    for await (const value of asyncIterableFlow({})()) {
+    for await (const value of asyncIterableFlow(runtime)()) {
       asyncIterableValues.push(value);
     }
     expect(asyncIterableValues).toEqual([
@@ -124,76 +114,6 @@ describe("Operation", () => {
       expect(values).toEqual([Result.err("Boom")]);
     });
 
-    test("resolves iterable", async () => {
-      const flow = F.tryIterable(
-        () => [1, 2, 3],
-        (u) => String(u),
-      );
-      const values: any[] = [];
-      for await (const value of flow({})()) {
-        values.push(value);
-      }
-      expect(values).toEqual([Result.ok(1), Result.ok(2), Result.ok(3)]);
-    });
-
-    test("resolves async iterable", async () => {
-      const flow = F.tryIterable(
-        () =>
-          (async function* () {
-            yield 1;
-            yield 2;
-            yield 3;
-          })(),
-        (u) => String(u),
-      );
-      const values: any[] = [];
-      for await (const value of flow({})()) {
-        values.push(value);
-      }
-      expect(values).toEqual([Result.ok(1), Result.ok(2), Result.ok(3)]);
-    });
-
-    test("handles error in iterable", async () => {
-      const flow = F.tryIterable(
-        () => {
-          throw "Boom";
-        },
-        (u) => u as string,
-      );
-      const values: any[] = [];
-      for await (const value of flow({})()) {
-        values.push(value);
-      }
-      expect(values).toEqual([Result.err("Boom")]);
-    });
-
-    test("handles error in async iterable", async () => {
-      const flow = F.tryIterable(
-        () =>
-          (async function* () {
-            throw "Boom";
-          })(),
-        (u) => u as string,
-      );
-      const values: any[] = [];
-      for await (const value of flow({})()) {
-        values.push(value);
-      }
-      expect(values).toEqual([Result.err("Boom")]);
-    });
-
-    test("is lazy", async () => {
-      const thunkMock = mock(() => [1, 2, 3]);
-      const flow = F.tryIterable(thunkMock, (u) => String(u));
-      expect(thunkMock).not.toHaveBeenCalled();
-      const values: any[] = [];
-      for await (const value of flow({})()) {
-        values.push(value);
-      }
-      expect(thunkMock).toHaveBeenCalledTimes(1);
-      expect(values).toEqual([Result.ok(1), Result.ok(2), Result.ok(3)]);
-    });
-
     test("is lazy", async () => {
       const thunkMock = mock(() => Promise.resolve(11));
       const flow = F.tryPromise(thunkMock, (u) => String(u));
@@ -225,7 +145,7 @@ describe("Operation", () => {
   });
 
   test("askFor", async () => {
-    class NumberTag extends Context.Tag("number")<number>() {}
+    class NumberTag extends Env.Tag("number")<number>() {}
     const env = {
       [NumberTag.key]: 5,
     };
