@@ -13,6 +13,17 @@ export class InvalidRuntime extends Error {
   }
 }
 
+export function createRuntime() {
+  const controller = new AbortController();
+
+  const runtime: OperationRuntime = {
+    abortSignal: controller.signal,
+    abort: (reason?: string) => controller.abort(reason),
+  };
+
+  return [controller, { [OperationRuntimeSymbol]: runtime }] as const;
+}
+
 export function getRuntimeFromEnv<
   R extends { [OperationRuntimeSymbol]?: OperationRuntime },
 >(r: R) {
