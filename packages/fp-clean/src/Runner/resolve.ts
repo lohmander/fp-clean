@@ -1,12 +1,12 @@
 import { asOperation } from "../Operation/internal/asOperation";
-import { CircularDependencyError, type Context } from "../Context";
+import { CircularDependencyError, type Env } from "../Env";
 import * as Operation from "../Operation";
 import { OperationRuntimeSymbol } from "../Operation/runtime";
 import * as Result from "../Result";
 import { DependencyResolutionError } from "./error";
 
 export function resolve<R, S, E>(
-  ctx: Context<R, S, E>,
+  ctx: Env<R, S, E>,
 ): Operation.Operation<S, E, {}> {
   const blueprint = ctx.services as Record<
     string,

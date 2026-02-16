@@ -2,19 +2,19 @@
 /**
  * Example demonstrating the equivalence between Service.proxy calls
  * and manual flatMap patterns.
- * 
+ *
  * This shows that:
  *   Service.proxy(Tag).method(args)
  * is equivalent to:
  *   flatMap(service => service.method(args))(askFor(Tag))
  */
 
-import * as Context from '../src/Context';
-import * as F from '../src/Operation';
-import * as Runner from '../src/Runner';
-import { Service } from '../src/Service';
-import { pipe } from '../src/pipe';
-import { askFor } from '../src/Operation/constructors';
+import * as Context from "../src/Context";
+import * as F from "../src/Operation";
+import * as Runner from "../src/Runner";
+import { Service } from "../src/Service";
+import { pipe } from "../src/pipe";
+import { askFor } from "../src/Operation/constructors";
 
 // ============================================================================
 // Define a simple service
@@ -38,7 +38,7 @@ const mockCalculator: Calculator = {
 
 const context = pipe(
   Context.empty(),
-  Context.provide(CalculatorTag, F.ok(mockCalculator))
+  Context.provide(CalculatorTag, F.ok(mockCalculator)),
 );
 
 // ============================================================================
@@ -62,11 +62,13 @@ async function compareStyles() {
   // --------------------------------------------------------------------------
   const programManual = pipe(
     askFor(CalculatorTag),
-    F.flatMap(calc => calc.add(5, 3)),
-    F.flatMap(sum => pipe(
-      askFor(CalculatorTag),
-      F.flatMap(calc => calc.multiply(sum, 2))
-    ))
+    F.flatMap((calc) => calc.add(5, 3)),
+    F.flatMap((sum) =>
+      pipe(
+        askFor(CalculatorTag),
+        F.flatMap((calc) => calc.multiply(sum, 2)),
+      ),
+    ),
   );
 
   // --------------------------------------------------------------------------

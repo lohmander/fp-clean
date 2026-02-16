@@ -31,8 +31,8 @@ Shows that Service proxy calls are equivalent to manual `flatMap` patterns:
 
 ```typescript
 // These two are equivalent:
-Service.proxy(Tag).method(args)
-flatMap(service => service.method(args))(askFor(Tag))
+Service.proxy(Tag).method(args);
+flatMap((service) => service.method(args))(askFor(Tag));
 ```
 
 The example runs both styles with the same inputs and confirms they produce identical results.

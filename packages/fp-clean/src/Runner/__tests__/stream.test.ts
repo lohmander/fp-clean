@@ -2,7 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 
 import * as Operation from "~/Operation";
 import * as Result from "~/Result";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
 import { stream } from "../stream";
 import { pipe } from "~/pipe";
 
@@ -10,7 +10,7 @@ describe("stream", () => {
   test("should yield results from the operation", async () => {
     const mockOperation = Operation.fromIterable([1, 2, 3]);
 
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     const results: Result.Result<number, never>[] = [];
     for await (const result of stream(mockOperation, mockContext)) {
@@ -21,7 +21,7 @@ describe("stream", () => {
   });
 
   test("should handle operations with dependencies", async () => {
-    class MyTag extends Context.Tag("myTag")<string>() {}
+    class MyTag extends Env.Tag("myTag")<string>() {}
 
     const mockOperation = Operation.gen(function* () {
       const a = yield* Operation.askFor(MyTag);
@@ -29,8 +29,8 @@ describe("stream", () => {
     });
 
     const mockContext = pipe(
-      Context.empty(),
-      Context.provide(MyTag, Operation.ok("test-value")),
+      Env.empty(),
+      Env.provide(MyTag, Operation.ok("test-value")),
     );
 
     const results: Result.Result<string, never>[] = [];
@@ -44,7 +44,7 @@ describe("stream", () => {
   test("should handle errors in operations", async () => {
     const mockOperation = Operation.err(new Error("test-error"));
 
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     const results: Result.Result<never, Error>[] = [];
     for await (const result of stream(mockOperation, mockContext)) {
@@ -63,7 +63,7 @@ describe("stream", () => {
       (e) => new Error(String(e)),
     );
 
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     const results: Result.Result<string, Error>[] = [];
     for await (const result of stream(mockOperation, mockContext)) {
@@ -74,14 +74,14 @@ describe("stream", () => {
   });
 
   test("resolves dependencies", async () => {
-    class MultiplierTag extends Context.Tag("multi")<number>() {}
-    class FibbonacciTag extends Context.Tag("fibonacci")<{
+    class MultiplierTag extends Env.Tag("multi")<number>() {}
+    class FibbonacciTag extends Env.Tag("fibonacci")<{
       next: () => number;
     }>() {}
 
     const ctx = pipe(
-      Context.empty(),
-      Context.provide(
+      Env.empty(),
+      Env.provide(
         FibbonacciTag,
         Operation.gen(function* () {
           const multi = yield* Operation.askFor(MultiplierTag);
@@ -97,7 +97,7 @@ describe("stream", () => {
           };
         }),
       ),
-      Context.provide(MultiplierTag, Operation.ok(-1)),
+      Env.provide(MultiplierTag, Operation.ok(-1)),
     );
 
     const op = pipe(
@@ -128,7 +128,7 @@ describe("stream", () => {
       Operation.tap(tap),
     );
 
-    for await (const res of stream(op, Context.empty())) {
+    for await (const res of stream(op, Env.empty())) {
       if (res.ok && res.value === 3) break; // Cancel after the third value
     }
 

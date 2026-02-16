@@ -1,6 +1,6 @@
 import { describe, expect, test } from "bun:test";
 import * as F from "~/Operation";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
 import * as Service from "~/Service";
 import { get } from "~/Runner";
 
@@ -11,7 +11,7 @@ interface Clock {
 }
 
 // Define tag for clock service
-class ClockTag extends Context.Tag("clock")<Clock>() {}
+class ClockTag extends Env.Tag("clock")<Clock>() {}
 
 // Create a service proxy
 const clockService = Service.proxy(ClockTag);
@@ -23,7 +23,7 @@ interface UserService {
 }
 
 // Define tag for user service
-class UserServiceTag extends Context.Tag("userService")<UserService>() {}
+class UserServiceTag extends Env.Tag("userService")<UserService>() {}
 
 // Create a service proxy
 const userService = Service.proxy(UserServiceTag);
@@ -46,10 +46,7 @@ describe("Service.proxy", () => {
       };
 
       // Create context with mock service
-      const context = Context.provide(
-        ClockTag,
-        F.ok(mockClock),
-      )(Context.empty());
+      const context = Env.provide(ClockTag, F.ok(mockClock))(Env.empty());
 
       // Call the proxy method to get the Operation
       const nowOp = clockService.now();
@@ -72,10 +69,7 @@ describe("Service.proxy", () => {
       };
 
       // Create context with mock service
-      const context = Context.provide(
-        ClockTag,
-        F.ok(mockClock),
-      )(Context.empty());
+      const context = Env.provide(ClockTag, F.ok(mockClock))(Env.empty());
 
       // Call the proxy method to get the Operation
       const tzOp = clockService.timezone();
@@ -97,10 +91,7 @@ describe("Service.proxy", () => {
       };
 
       // Create context with mock service
-      const context = Context.provide(
-        ClockTag,
-        F.ok(mockClock),
-      )(Context.empty());
+      const context = Env.provide(ClockTag, F.ok(mockClock))(Env.empty());
 
       // Create a composed operation using the proxy
       const composed = F.gen(function* () {
@@ -127,10 +118,10 @@ describe("Service.proxy", () => {
       };
 
       // Create context with mock service
-      const context = Context.provide(
+      const context = Env.provide(
         UserServiceTag,
         F.ok(mockUserService),
-      )(Context.empty());
+      )(Env.empty());
 
       // Call the proxy method with arguments
       const userOp = userService.findById("123");
@@ -152,10 +143,10 @@ describe("Service.proxy", () => {
       };
 
       // Create context with mock service
-      const context = Context.provide(
+      const context = Env.provide(
         UserServiceTag,
         F.ok(mockUserService),
-      )(Context.empty());
+      )(Env.empty());
 
       // Call the proxy method with arguments
       const userOp = userService.create("John Doe");
@@ -177,10 +168,10 @@ describe("Service.proxy", () => {
       };
 
       // Create context with mock service
-      const context = Context.provide(
+      const context = Env.provide(
         UserServiceTag,
         F.ok(mockUserService),
-      )(Context.empty());
+      )(Env.empty());
 
       // Compose operations using gen
       const composed = F.gen(function* () {
@@ -204,14 +195,14 @@ describe("Service.proxy", () => {
       interface BadService {
         value: number; // not a function
       }
-      class BadServiceTag extends Context.Tag("bad")<BadService>() {}
+      class BadServiceTag extends Env.Tag("bad")<BadService>() {}
       const badService = Service.proxy(BadServiceTag) as any; // cast to any to bypass type error
 
       const mockBadService: BadService = { value: 42 };
-      const context = Context.provide(
+      const context = Env.provide(
         BadServiceTag,
         F.ok(mockBadService),
-      )(Context.empty());
+      )(Env.empty());
 
       const op = badService.value(); // This will call the proxy's function
 
@@ -231,7 +222,7 @@ describe("Service.proxy", () => {
       multiply: (a: number, b: number) => F.Operation<number>;
     }
 
-    class MathTag extends Context.Tag("math")<MathService>() {}
+    class MathTag extends Env.Tag("math")<MathService>() {}
 
     const mathService = Service.proxy(MathTag);
 
@@ -241,10 +232,7 @@ describe("Service.proxy", () => {
         multiply: (a, b) => F.ok(a * b),
       };
 
-      const context = Context.provide(
-        MathTag,
-        F.ok(mockMath),
-      )(Context.empty());
+      const context = Env.provide(MathTag, F.ok(mockMath))(Env.empty());
 
       // Using proxy
       const proxyOp = mathService.add(3, 4);
@@ -272,10 +260,7 @@ describe("Service.proxy", () => {
         multiply: (a, b) => F.ok(a * b),
       };
 
-      const context = Context.provide(
-        MathTag,
-        F.ok(mockMath),
-      )(Context.empty());
+      const context = Env.provide(MathTag, F.ok(mockMath))(Env.empty());
 
       // Composed operation using proxy
       const proxyOp = F.gen(function* () {

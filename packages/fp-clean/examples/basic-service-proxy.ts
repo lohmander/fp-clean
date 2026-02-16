@@ -1,7 +1,7 @@
 #!/usr/bin/env bun
 /**
  * Basic example demonstrating the Service proxy pattern in fp-clean.
- * 
+ *
  * This example shows how to:
  * 1. Define a service interface
  * 2. Create a Tag for the service
@@ -10,10 +10,10 @@
  * 5. Provide implementations and run the program
  */
 
-import * as Context from '../src/Context';
-import * as F from '../src/Operation';
-import * as Runner from '../src/Runner';
-import { Service } from '../src/Service';
+import * as Context from "../src/Context";
+import * as F from "../src/Operation";
+import * as Runner from "../src/Runner";
+import { Service } from "../src/Service";
 
 // ============================================================================
 // 1. Define Service Interfaces
@@ -26,7 +26,9 @@ interface Logger {
 
 interface Database {
   getUser: (id: string) => F.Operation<{ id: string; name: string }, Error>;
-  saveUser: (user: { name: string }) => F.Operation<{ id: string; name: string }, Error>;
+  saveUser: (user: {
+    name: string;
+  }) => F.Operation<{ id: string; name: string }, Error>;
 }
 
 // ============================================================================
@@ -98,14 +100,14 @@ const mockDatabase: Database = {
 const context = pipe(
   Context.empty(),
   Context.provide(LoggerTag, F.ok(mockLogger)),
-  Context.provide(DatabaseTag, F.ok(mockDatabase))
+  Context.provide(DatabaseTag, F.ok(mockDatabase)),
 );
 
 // ============================================================================
 // 6. Run the Program
 // ============================================================================
 
-import { pipe } from '../src/pipe';
+import { pipe } from "../src/pipe";
 
 async function main() {
   console.log("=== Running fp-clean Service Proxy Example ===\n");

@@ -2,7 +2,7 @@ import { describe, expect, mock, test } from "bun:test";
 import * as F from "~/Operation";
 import * as Result from "~/Result";
 import * as StreamResult from "~/StreamResult";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
 import { createRuntime } from "../runtime";
 
 describe("Operation", () => {
@@ -146,7 +146,7 @@ describe("Operation", () => {
   });
 
   test("askFor", async () => {
-    class NumberTag extends Context.Tag("number")<number>() {}
+    class NumberTag extends Env.Tag("number")<number>() {}
     const env = {
       [NumberTag.key]: 5,
     };

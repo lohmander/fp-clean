@@ -25,8 +25,8 @@ Requires TypeScript 5+.
 ### 1. Define a Service Interface
 
 ```typescript
-import * as Context from 'fp-clean/Context';
-import * as F from 'fp-clean/Operation';
+import * as Context from "fp-clean/Context";
+import * as F from "fp-clean/Operation";
 
 interface Clock {
   now: () => F.Operation<Date>;
@@ -39,7 +39,7 @@ const ClockTag = Context.Tag("clock")<Clock>();
 ### 2. Create a Service Proxy
 
 ```typescript
-import { Service } from 'fp-clean';
+import { Service } from "fp-clean";
 
 const ClockService = Service.proxy(ClockTag);
 // ClockService.now() and ClockService.sleep(ms) are now available
@@ -48,13 +48,13 @@ const ClockService = Service.proxy(ClockTag);
 ### 3. Use the Service in Your Program
 
 ```typescript
-import { pipe } from 'fp-clean';
+import { pipe } from "fp-clean";
 
 const program = F.gen(function* () {
   const now = yield* ClockService.now();
   console.log(`Current time: ${now.toISOString()}`);
   yield* ClockService.sleep(1000);
-  console.log('Slept for 1 second');
+  console.log("Slept for 1 second");
   return now;
 });
 ```
@@ -62,7 +62,7 @@ const program = F.gen(function* () {
 ### 4. Provide Implementation and Run
 
 ```typescript
-import * as Runner from 'fp-clean/Runner';
+import * as Runner from "fp-clean/Runner";
 
 const mockClock: Clock = {
   now: () => F.ok(new Date()),
@@ -73,9 +73,9 @@ const context = Context.provide(ClockTag, F.ok(mockClock))(Context.empty());
 
 const result = await Runner.get(program, context);
 if (result.ok) {
-  console.log('Program succeeded:', result.value);
+  console.log("Program succeeded:", result.value);
 } else {
-  console.error('Program failed:', result.error);
+  console.error("Program failed:", result.error);
 }
 ```
 
@@ -94,6 +94,7 @@ const LoggerTag = Context.Tag("logger")<{
 ### Operation
 
 An `Operation<A, E, R>` represents a computation that:
+
 - Succeeds with a value of type `A`
 - May fail with an error of type `E`
 - Requires dependencies described by `R`
@@ -108,7 +109,7 @@ A `Context` is a map from `Tag`s to their implementations (Operations that provi
 const context = pipe(
   Context.empty(),
   Context.provide(ClockTag, F.ok(mockClock)),
-  Context.provide(LoggerTag, F.ok(mockLogger))
+  Context.provide(LoggerTag, F.ok(mockLogger)),
 );
 ```
 
@@ -129,7 +130,7 @@ The Service Proxy pattern dramatically improves developer experience when workin
 ```typescript
 const sleepOp = pipe(
   askFor(ClockTag),
-  F.flatMap(clock => clock.sleep(1000))
+  F.flatMap((clock) => clock.sleep(1000)),
 );
 ```
 
@@ -142,6 +143,7 @@ const sleepOp = ClockService.sleep(1000);
 ### How It Works
 
 `Service.proxy(Tag)` returns a proxy object where each method:
+
 1. Automatically uses `askFor` to obtain the service instance
 2. Calls the corresponding method on the service
 3. Properly handles both Operation and non-Operation return values
@@ -150,6 +152,7 @@ const sleepOp = ClockService.sleep(1000);
 ### Type Safety
 
 The proxy is compile-time validated:
+
 - Service interfaces must consist **only of methods** (functions)
 - Non-method properties result in `never` types
 - Return types are correctly inferred as Operations with appropriate requirements
@@ -160,7 +163,7 @@ Service proxy calls add minimal overhead (~400ns per call) compared to manual `f
 
 ```typescript
 const { sleep } = ClockService; // Store reference
-const sleepOp = sleep(1000);    // Repeated calls avoid proxy get trap
+const sleepOp = sleep(1000); // Repeated calls avoid proxy get trap
 ```
 
 See [benchmarks](#benchmarks) for detailed performance characteristics.
@@ -193,6 +196,7 @@ bun benchmark:fast # Quick run
 ### Operation
 
 Core operations constructors and combinators:
+
 - `ok`, `fail`, `delay`, `tryCatch`
 - `map`, `flatMap`, `zip`, `ap`
 - `gen` – generator syntax for sequential composition

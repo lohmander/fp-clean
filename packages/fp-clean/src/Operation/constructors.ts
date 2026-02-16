@@ -3,7 +3,7 @@ import type {
   Requires,
   TagConstructor,
   ValueOf,
-} from "../Context/Tag";
+} from "../Env/Tag";
 import * as RSR from "../ReaderStreamResult";
 import type { StreamResult } from "../StreamResult";
 import { asOperation } from "./internal/asOperation";

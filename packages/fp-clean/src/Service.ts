@@ -1,9 +1,4 @@
-import type {
-  TagConstructor,
-  AnyTagShape,
-  ValueOf,
-  Requires,
-} from "./Context/Tag";
+import type { TagConstructor, AnyTagShape, ValueOf, Requires } from "./Env/Tag";
 import type { Operation } from "./Operation";
 import { OperationBrand } from "./Operation";
 import { askFor } from "./Operation/constructors";

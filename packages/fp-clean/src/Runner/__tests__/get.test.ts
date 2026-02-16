@@ -2,14 +2,14 @@ import { describe, expect, test } from "bun:test";
 
 import * as Operation from "~/Operation";
 import * as Result from "~/Result";
-import * as Context from "~/Context";
+import * as Env from "~/Env";
 import { get } from "../get";
 import { pipe } from "~/pipe";
 
 describe("get", () => {
   test("should return the first result from the operation", async () => {
     const mockOperation = Operation.fromIterable([1, 2, 3]);
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     const result = await get(mockOperation, mockContext);
 
@@ -17,7 +17,7 @@ describe("get", () => {
   });
 
   test("should handle operations with dependencies", async () => {
-    class MyTag extends Context.Tag("myTag")<string>() {}
+    class MyTag extends Env.Tag("myTag")<string>() {}
 
     const mockOperation = Operation.gen(function* () {
       const a = yield* Operation.askFor(MyTag);
@@ -25,8 +25,8 @@ describe("get", () => {
     });
 
     const mockContext = pipe(
-      Context.empty(),
-      Context.provide(MyTag, Operation.ok("test-value")),
+      Env.empty(),
+      Env.provide(MyTag, Operation.ok("test-value")),
     );
 
     const result = await get(mockOperation, mockContext);
@@ -36,7 +36,7 @@ describe("get", () => {
 
   test("should handle errors in operations", async () => {
     const mockOperation = Operation.err(new Error("test-error"));
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     const result = await get(mockOperation, mockContext);
 
@@ -52,7 +52,7 @@ describe("get", () => {
       (e) => new Error(String(e)),
     );
 
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     const result = await get(mockOperation, mockContext);
 
@@ -61,7 +61,7 @@ describe("get", () => {
 
   test("should handle operations that complete without yielding a result", async () => {
     const mockOperation = Operation.fromIterable([]);
-    const mockContext = Context.empty();
+    const mockContext = Env.empty();
 
     expect(get(mockOperation, mockContext)).rejects.toThrow(
       "Operation completed without yielding a result.",
