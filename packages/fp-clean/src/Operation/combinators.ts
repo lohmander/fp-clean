@@ -18,7 +18,10 @@ export function flatMap<Ok, Ok2, Err2, Req2>(
               return;
             }
 
-            yield* f(res.value)(r)();
+            for await (const innerRes of f(res.value)(r)()) {
+              yield innerRes as Result<Ok2, Err | Err2>;
+              if (!innerRes.ok) return;
+            }
           }
         },
     );
@@ -39,11 +42,10 @@ export function orElse<Err, Err2, Ok, Ok2, Req2>(
               continue;
             }
 
-            yield* f(res.error)(r)() as AsyncGenerator<
-              Result<Ok | Ok2, Err2>,
-              void,
-              unknown
-            >;
+            for await (const innerRes of f(res.error)(r)()) {
+              yield innerRes as Result<Ok | Ok2, Err | Err2>;
+              if (!innerRes.ok) return;
+            }
           }
         },
     );
