@@ -1,6 +1,9 @@
+import * as Observer from "./observer";
+
 export const OperationRuntimeSymbol = Symbol.for("OperationRuntime");
 
 export interface OperationRuntime {
+  readonly observer: Observer.Observer;
   readonly abortSignal: AbortSignal;
 
   abort(reason?: string): void;
@@ -17,6 +20,7 @@ export function createRuntime() {
   const controller = new AbortController();
 
   const runtime: OperationRuntime = {
+    observer: Observer.none,
     abortSignal: controller.signal,
     abort: (reason?: string) => controller.abort(reason),
   };
