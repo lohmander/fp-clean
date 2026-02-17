@@ -24,12 +24,12 @@ export function flatMap<Ok, Ok2, Err2, Req2>(
     );
 }
 
-export function orElse<Err, Err2, Ok, Req2>(
-  f: (error: Err) => Operation<Ok, Err2, Req2>,
+export function orElse<Err, Err2, Ok, Ok2, Req2>(
+  f: (error: Err) => Operation<Ok2, Err2, Req2>,
 ) {
   return <Req>(
     fa: Operation<Ok, Err, Req>,
-  ): Operation<Ok, Err | Err2, Req & Req2> =>
+  ): Operation<Ok | Ok2, Err | Err2, Req & Req2> =>
     asOperation(
       (r) =>
         async function* () {
@@ -39,7 +39,11 @@ export function orElse<Err, Err2, Ok, Req2>(
               continue;
             }
 
-            yield* f(res.error)(r)();
+            yield* f(res.error)(r)() as AsyncGenerator<
+              Result<Ok | Ok2, Err2>,
+              void,
+              unknown
+            >;
           }
         },
     );
