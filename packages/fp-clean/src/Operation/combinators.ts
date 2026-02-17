@@ -1,4 +1,4 @@
-import { type Result } from "~/Result";
+import { type Result } from "../Result";
 import { err, ok } from "./constructors";
 import { asOperation } from "./internal/asOperation";
 import type { Operation } from "./types";
@@ -25,7 +25,7 @@ export function flatMap<Ok, Ok2, Err2, Req2>(
 }
 
 export function orElse<Err, Err2, Ok, Ok2, Req2>(
-  f: (error: Err) => Operation<Ok2, Err2, Req2>,
+  f: (e: Err) => Operation<Ok2, Err2, Req2>,
 ) {
   return <Req>(
     fa: Operation<Ok, Err, Req>,
@@ -51,12 +51,12 @@ export function orElse<Err, Err2, Ok, Ok2, Req2>(
 
 export function map<Ok, Ok2>(f: (a: Ok) => Ok2) {
   return <Err, Req>(fa: Operation<Ok, Err, Req>) =>
-    flatMap((a: Ok) => ok(f(a)) as Operation<Ok2, Err, Req>)(fa);
+    flatMap((a: Ok) => ok(f(a)))(fa);
 }
 
 export function mapErr<Err, Err2>(f: (error: Err) => Err2) {
   return <Ok, Req>(o: Operation<Ok, Err, Req>) =>
-    orElse((error: Err) => err(f(error)) as Operation<Ok, Err2, Req>)(o);
+    orElse((error: Err) => err(f(error)))(o);
 }
 
 export function tap<Ok>(f: (a: Ok) => void) {
@@ -69,8 +69,8 @@ export function tap<Ok>(f: (a: Ok) => void) {
 
 export function tapErr<Err>(f: (error: Err) => void) {
   return <Ok, Req>(fa: Operation<Ok, Err, Req>) =>
-    orElse((error: Err) => {
-      f(error);
-      return err(error) as Operation<Ok, Err, Req>;
+    orElse((e: Err) => {
+      f(e);
+      return err(e) as Operation<Ok, Err, Req>;
     })(fa);
 }

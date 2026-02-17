@@ -17,12 +17,12 @@ function asyncGen<T>(values: T[]) {
   };
 }
 
-export function ok<Ok>(value: Ok): Operation<Ok> {
-  return asOperation(() => asyncGen([Result.ok(value)]));
+export function ok<Ok>(a: Ok): Operation<Ok> {
+  return asOperation(() => asyncGen([Result.ok(a)]));
 }
 
-export function err<Err>(error: Err): Operation<never, Err> {
-  return asOperation(() => asyncGen([Result.err(error)]));
+export function err<Err>(e: Err): Operation<never, Err> {
+  return asOperation(() => asyncGen([Result.err(e)]));
 }
 
 export function ask<Requirements>(): Operation<
